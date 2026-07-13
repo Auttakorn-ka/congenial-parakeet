@@ -73,4 +73,4 @@ function escapeHtml(s){return s.replace(/&/g,'&').replace(/</g,'<').replace(/>/g
 initIdx();render();
 ['contextmenu','copy','cut','selectstart','dragstart'].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault();return false;});});
 document.addEventListener('keydown',function(e){var k=(e.key||'').toLowerCase();if((e.ctrlKey||e.metaKey)&&['c','x','a','s','u','p'].includes(k))e.preventDefault();if(k==='f12')e.preventDefault();});
-<\/script></body></html>
+</script></body></html>
