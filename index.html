@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>นิยายออนไลน์ — อ่านนิยายฟรี</title>
+<style>
+  :root{
+    --bg:#f5f3ef; --card:#ffffff; --text:#2a2a2a; --muted:#6b6b6b;
+    --accent:#a6543a; --border:#e3ddd3; --shadow:0 2px 10px rgba(0,0,0,.06);
+  }
+  html[data-theme="dark"]{
+    --bg:#15171c; --card:#1e2128; --text:#dfe1e6; --muted:#8b90a0;
+    --accent:#e0895f; --border:#2c3038; --shadow:0 2px 12px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI','Sarabun',Tahoma,sans-serif;
+    background:var(--bg); color:var(--text);
+    line-height:1.7; transition:background .25s,color .25s;
+  }
+  header{
+    position:sticky; top:0; z-index:10;
+    background:var(--card); border-bottom:1px solid var(--border);
+    box-shadow:var(--shadow);
+  }
+  .bar{
+    max-width:820px; margin:0 auto; padding:14px 18px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .logo{font-size:20px; font-weight:700; color:var(--accent); cursor:pointer; white-space:nowrap}
+  .spacer{flex:1}
+  .btn{
+    background:transparent; border:1px solid var(--border); color:var(--text);
+    padding:7px 12px; border-radius:8px; cursor:pointer; font-size:14px;
+    display:inline-flex; align-items:center; gap:6px; transition:.15s;
+  }
+  .btn:hover{border-color:var(--accent); color:var(--accent)}
+  main{max-width:820px; margin:0 auto; padding:24px 18px 60px}
+  /* list */
+  .intro{color:var(--muted); margin-bottom:22px; font-size:15px}
+  .grid{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media(max-width:600px){.grid{grid-template-columns:1fr}}
+  .novel{
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:18px; cursor:pointer; box-shadow:var(--shadow); transition:transform .15s;
+  }
+  .novel:hover{transform:translateY(-3px)}
+  .cover{
+    height:120px; border-radius:10px; margin-bottom:14px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:40px; color:#fff;
+  }
+  .novel h3{font-size:17px; margin-bottom:6px}
+  .tag{
+    display:inline-block; font-size:12px; color:var(--accent);
+    background:color-mix(in srgb,var(--accent) 12%,transparent);
+    padding:2px 9px; border-radius:20px; margin-bottom:8px;
+  }
+  .novel p{font-size:13.5px; color:var(--muted)}
+  .meta{font-size:12px; color:var(--muted); margin-top:10px}
+  /* detail */
+  .back{color:var(--accent); cursor:pointer; font-size:14px; margin-bottom:18px; display:inline-block}
+  .detail-head{display:flex; gap:18px; margin-bottom:24px; flex-wrap:wrap}
+  .detail-head .cover{width:120px; height:160px; flex-shrink:0; font-size:52px}
+  .detail-info h2{font-size:22px; margin-bottom:8px}
+  .detail-info .desc{color:var(--muted); font-size:14.5px; margin-top:10px}
+  .chapters{list-style:none}
+  .chapters li{
+    padding:14px 16px; border:1px solid var(--border); border-radius:10px;
+    margin-bottom:10px; cursor:pointer; background:var(--card);
+    display:flex; justify-content:space-between; align-items:center; transition:.15s;
+  }
+  .chapters li:hover{border-color:var(--accent)}
+  .chapters .num{color:var(--muted); font-size:13px}
+  /* reader */
+  .reader h2{font-size:24px; margin-bottom:4px}
+  .reader .chap-title{color:var(--muted); margin-bottom:24px; font-size:15px}
+  .reader-body{font-size:var(--reader-size,18px); transition:font-size .12s}
+  .reader-body p{margin-bottom:1.1em}
+  .toolbar{
+    display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:10px 14px; margin-bottom:24px; box-shadow:var(--shadow);
+  }
+  .toolbar span{font-size:13px; color:var(--muted); margin-right:2px}
+  .nav-chap{display:flex; gap:10px; margin-top:36px}
+  .nav-chap .btn{flex:1; justify-content:center}
+  .nav-chap .btn:disabled{opacity:.4; cursor:not-allowed}
+  footer{text-align:center; color:var(--muted); font-size:13px; padding:30px 0}
+
+  /* ===== Responsive: แท็บเล็ต ===== */
+  @media(max-width:600px){
+    .grid{grid-template-columns:1fr}
+    .bar{padding:12px 14px; gap:8px}
+    .logo{font-size:18px}
+    main{padding:18px 14px 48px}
+    .btn{padding:9px 12px}                 /* ปุ่มใหญ่ขึ้น กดบนจอสัมผัสง่าย */
+    .detail-head{gap:14px}
+    .detail-head .cover{width:90px; height:130px; font-size:40px}
+    .detail-info h2{font-size:19px}
+    .reader h2{font-size:20px}
+    .reader-body{--reader-size:17px}
+  }
+
+  /* ===== Responsive: มือถือจอเล็ก ===== */
+  @media(max-width:400px){
+    .logo{font-size:16px}
+    #themeBtn{padding:8px 10px; font-size:13px}
+    main{padding:16px 12px 40px}
+    .novel{padding:15px}
+    .cover{height:100px; font-size:34px}
+    /* ปกกับข้อมูลเรื่องวางเป็นแนวตั้งกลางจอ */
+    .detail-head{flex-direction:column; align-items:center; text-align:center}
+    .detail-head .cover{width:110px; height:150px}
+    .chapters li{padding:13px 14px}
+    /* ปุ่มเปลี่ยนตอนเรียงลงมาแทนเรียงข้าง */
+    .nav-chap{flex-direction:column}
+    .toolbar{justify-content:center}
+  }
+
+  /* ไม่ให้ไฮไลต์สีฟ้าเวลาแตะบนมือถือ + ปกไม่ถูกลากเลือก */
+  .novel,.chapters li,.btn,.logo,.back{-webkit-tap-highlight-color:transparent}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo" onclick="showList()">📖 นิยายออนไลน์</div>
+    <div class="spacer"></div>
+    <button class="btn" id="themeBtn" onclick="toggleTheme()">🌙 กลางคืน</button>
+  </div>
+</header>
+<main id="app"></main>
+<footer>เว็บตัวอย่างสำหรับอ่านนิยาย · สร้างด้วย HTML ไฟล์เดียว</footer>
+
+<script>
+// ---------- ข้อมูลนิยายจำลอง ----------
+const NOVELS = [
+  {
+    id:"star", title:"ดาวดวงสุดท้ายของราตรี", genre:"แฟนตาซี", emoji:"🌌",
+    color:"linear-gradient(135deg,#5b4b8a,#2c2a4a)",
+    desc:"เมื่อดวงดาวเริ่มดับลงทีละดวง เด็กสาวผู้มองเห็นแสงที่คนอื่นมองไม่เห็น ต้องออกเดินทางเพื่อจุดประกายฟ้าราตรีอีกครั้ง",
+    chapters:[
+      {title:"แสงแรกที่ริมหน้าต่าง", body:[
+        "คืนนั้นฟ้าไร้ดาว มีเพียงจันทร์เสี้ยวบางเบาลอยอยู่เหนือหลังคาบ้านไม้เก่า อรุณีนั่งกอดเข่าอยู่ริมหน้าต่าง มองออกไปยังความมืดที่ทอดยาวไปจนสุดสายตา",
+        "“แม่บอกว่าเมื่อก่อนดาวเต็มฟ้า” เธอกระซิบกับตัวเอง “แต่ทำไมตอนนี้ถึงเหลือน้อยลงทุกคืน”",
+        "ทันใดนั้นเอง แสงเล็ก ๆ สีเงินก็วาบขึ้นที่มุมหนึ่งของท้องฟ้า มันไม่ใช่ดาว ไม่ใช่ดวงจันทร์ แต่เป็นบางสิ่งที่เต้นระริกราวกับหัวใจที่มีชีวิต และมีเพียงอรุณีเท่านั้นที่มองเห็นมัน",
+        "เธอลุกขึ้นยืนอย่างช้า ๆ หัวใจเต้นแรง บางอย่างกำลังเรียกหาเธอจากฟากฟ้าอันมืดมิด"
+      ]},
+      {title:"เสียงเรียกจากความมืด", body:[
+        "รุ่งเช้าอรุณีเล่าเรื่องแสงประหลาดให้ยายฟัง ยายหยุดกวาดใบไม้ มองเธอด้วยแววตาที่จริงจังผิดปกติ",
+        "“เจ้าเห็นมันจริง ๆ หรือ” ยายถาม เสียงสั่นเครือ “ถ้าเช่นนั้น เจ้าก็คือคนที่คำทำนายกล่าวถึง”",
+        "อรุณีไม่เข้าใจ แต่ก่อนที่เธอจะถามต่อ ท้องฟ้ากลางวันก็มืดลงราวกับมีม่านดำมาบดบังดวงอาทิตย์ ผู้คนในหมู่บ้านต่างวิ่งหนีด้วยความตกใจ",
+        "และในความมืดนั้น เสียงหนึ่งดังก้องในหัวของเธอ “ตามหาข้าสิ ก่อนที่ดาวดวงสุดท้ายจะดับ”"
+      ]},
+      {title:"ก้าวแรกบนเส้นทางดาว", body:[
+        "อรุณีเก็บของใส่ย่าม ยายมอบสร้อยคอเก่าเส้นหนึ่งให้ ปลายสร้อยเป็นเศษแก้วที่เรืองแสงจาง ๆ",
+        "“มันจะนำทางเจ้าเมื่อฟ้ามืดสนิท” ยายกล่าว “จงเชื่อในแสงของเจ้าเอง”",
+        "เธอเดินออกจากหมู่บ้านไปตามเส้นทางที่ไม่มีใครเคยไป เบื้องหน้าคือป่าลึกและภูเขาที่หายไปในหมอก แต่ในใจของเธอกลับอบอุ่นด้วยความหวังเล็ก ๆ",
+        "การเดินทางเพื่อจุดฟ้าราตรีให้สว่างอีกครั้งได้เริ่มต้นขึ้นแล้ว"
+      ]}
+    ]
+  },
+  {
+    id:"cafe", title:"คาเฟ่ปลายซอยกับแมวสีนม", genre:"ฟีลกู๊ด", emoji:"☕",
+    color:"linear-gradient(135deg,#d98c5f,#b5643c)",
+    desc:"เรื่องราวอบอุ่นหัวใจของคาเฟ่เล็ก ๆ ที่ปลายซอยเงียบ ๆ ซึ่งมีเจ้าแมวสีนมคอยต้อนรับลูกค้าที่มีเรื่องราวในใจ",
+    chapters:[
+      {title:"กาแฟแก้วแรกของวันฝนตก", body:[
+        "ฝนโปรยลงมาเบา ๆ ตั้งแต่เช้า ระฆังลมหน้าประตูคาเฟ่ส่งเสียงกรุ๊งกริ๊งเมื่อมีลูกค้าคนแรกผลักประตูเข้ามา",
+        "เจ้ามัทฉะ แมวสีนมตัวอ้วน เงยหน้าขึ้นจากเบาะนุ่มริมหน้าต่าง มองผู้มาเยือนด้วยดวงตาสีเหลืองอำพัน ก่อนจะกระโดดลงมาคลอเคลียที่ขา",
+        "“ยินดีต้อนรับค่ะ วันนี้ฝนตก เชิญนั่งอุ่น ๆ ก่อนนะคะ” เสียงของเจ้าของร้านนุ่มนวลเหมือนกลิ่นกาแฟที่ลอยอยู่ในอากาศ",
+        "ลูกค้าสาวคนนั้นยิ้มบาง ๆ เธอไม่ได้ยิ้มมานานแล้ว"
+      ]},
+      {title:"ความลับในถ้วยลาเต้", body:[
+        "“ขอลาเต้ร้อนหนึ่งที่ค่ะ” เธอสั่งพลางมองมือตัวเองที่ยังเปียกฝน",
+        "เมื่อถ้วยลาเต้มาถึง บนฟองนมมีลวดลายรูปหัวใจเล็ก ๆ และข้าง ๆ ถ้วยมีกระดาษโน้ตแผ่นจิ๋ววางอยู่ “ทุกวันที่ยากลำบาก คือวันที่กล้าหาญที่สุด”",
+        "น้ำตาของเธอไหลออกมาโดยไม่รู้ตัว เจ้ามัทฉะกระโดดขึ้นมานั่งบนตัก ส่งเสียงครางเบา ๆ ราวกับปลอบใจ",
+        "บางครั้งความอบอุ่นก็ซ่อนอยู่ในสิ่งเล็ก ๆ ที่เราคาดไม่ถึง"
+      ]}
+    ]
+  },
+  {
+    id:"detective", title:"บันทึกนักสืบเงามืด", genre:"สืบสวน", emoji:"🔍",
+    color:"linear-gradient(135deg,#3a4a5a,#1e2733)",
+    desc:"คดีลึกลับในเมืองที่ฝนไม่เคยหยุดตก กับนักสืบหนุ่มผู้เชื่อว่าทุกความจริงมีเงาซ่อนอยู่เสมอ",
+    chapters:[
+      {title:"จดหมายที่ไม่มีผู้ส่ง", body:[
+        "ซองจดหมายสีขาววางอยู่บนโต๊ะทำงานของผมตั้งแต่เมื่อไหร่ไม่มีใครรู้ ไม่มีชื่อผู้ส่ง มีเพียงตราประทับรูปนกกาสีดำ",
+        "ข้างในเป็นกระดาษแผ่นเดียว เขียนด้วยลายมือประณีต “เวลาเที่ยงคืน ที่หอนาฬิกาเก่า ความจริงกำลังรอคุณอยู่”",
+        "ผมจุดบุหรี่ มองออกไปนอกหน้าต่างที่สายฝนยังคงกระหน่ำ เมืองนี้ซ่อนความลับไว้มากเกินกว่าที่ใครจะนับไหว",
+        "และคืนนี้ ความลับหนึ่งกำลังจะถูกเปิดเผย"
+      ]},
+      {title:"เงาใต้แสงนาฬิกา", body:[
+        "หอนาฬิกาเก่าตั้งตระหง่านอยู่กลางจัตุรัสร้าง เข็มนาฬิกาชี้ใกล้เที่ยงคืนเต็มที ผมเดินเข้าไปด้วยความระมัดระวัง",
+        "เสียงฝีเท้าดังสะท้อนในความเงียบ ทันใดนั้นเงาร่างหนึ่งก็ปรากฏขึ้นใต้แสงสลัว",
+        "“คุณมาจริง ๆ ด้วย นักสืบ” เสียงนั้นเย็นเยียบ “งั้นก็มาฟังเรื่องที่ไม่มีใครกล้าพูดถึงกันเถอะ”",
+        "ผมกำหมัดแน่น รู้ทันทีว่าคดีนี้ลึกกว่าที่คิดไว้มาก"
+      ]}
+    ]
+  },
+  {
+    id:"school", title:"ฤดูร้อนที่เราไม่เคยลืม", genre:"โรแมนซ์วัยรุ่น", emoji:"🌻",
+    color:"linear-gradient(135deg,#e0a94c,#c77d3a)",
+    desc:"เรื่องราวรักครั้งแรกของเด็กมัธยมปลายในหน้าร้อนสุดท้ายก่อนแยกย้าย ความทรงจำที่หวานปนขม",
+    chapters:[
+      {title:"เสียงจักจั่นในเดือนกรกฎาคม", body:[
+        "เสียงจักจั่นดังระงมทั่วสนามโรงเรียน อากาศร้อนอบอ้าวจนเหงื่อซึม ผมนั่งอยู่ใต้ต้นไม้ใหญ่ริมสนาม มองท้องฟ้าสีครามไร้เมฆ",
+        "“นี่ นายมานั่งเหม่ออะไรอยู่คนเดียว” เสียงใสของเธอดังขึ้นข้าง ๆ เป็นเพื่อนร่วมชั้นที่ผมแอบมองมาตลอดปี",
+        "เธอยื่นไอศกรีมแท่งหนึ่งให้ “ร้อนจะตายอยู่แล้ว กินซะ” รอยยิ้มของเธอสดใสยิ่งกว่าแสงแดดหน้าร้อน",
+        "และผมก็รู้ตัวว่า ฤดูร้อนนี้จะไม่มีวันเหมือนเดิมอีกต่อไป"
+      ]},
+      {title:"คำสัญญาใต้ดอกไม้ไฟ", body:[
+        "คืนงานเทศกาลฤดูร้อน ท้องฟ้าเต็มไปด้วยดอกไม้ไฟหลากสี เราสองคนยืนเคียงกันบนสะพานเล็ก ๆ ริมแม่น้ำ",
+        "“ปีหน้าเราคงไปคนละที่แล้วเนอะ” เธอพูดเบา ๆ สายตาจับจ้องแสงไฟที่สะท้อนบนผิวน้ำ",
+        "ผมรวบรวมความกล้าที่สะสมมาทั้งปี “งั้น...สัญญากันได้ไหม ว่าไม่ว่าจะอยู่ที่ไหน เราจะกลับมาที่นี่ทุกหน้าร้อน”",
+        "เธอหันมายิ้ม พร้อมพยักหน้า ดอกไม้ไฟช่อใหญ่ระเบิดขึ้นเหนือหัวพอดี ส่องสว่างไปทั้งค่ำคืนและหัวใจของเราสองคน"
+      ]}
+    ]
+  }
+];
+
+// ---------- สถานะ ----------
+const app = document.getElementById('app');
+
+// โหมดกลางคืน
+function toggleTheme(){
+  const html = document.documentElement;
+  const dark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', dark ? 'light' : 'dark');
+  document.getElementById('themeBtn').textContent = dark ? '🌙 กลางคืน' : '☀️ กลางวัน';
+}
+
+// ขนาดฟอนต์
+let fontSize = 18;
+function changeFont(delta){
+  fontSize = Math.min(30, Math.max(14, fontSize + delta));
+  document.documentElement.style.setProperty('--reader-size', fontSize + 'px');
+  const lbl = document.getElementById('fontLabel');
+  if(lbl) lbl.textContent = fontSize + 'px';
+}
+
+// ---------- หน้ารายชื่อ ----------
+function showList(){
+  window.scrollTo(0,0);
+  let html = '<p class="intro">เลือกนิยายที่อยากอ่าน มีทั้งหมด '+NOVELS.length+' เรื่อง 📚</p><div class="grid">';
+  NOVELS.forEach(n=>{
+    html += `<div class="novel" onclick="showNovel('${n.id}')">
+      <div class="cover" style="background:${n.color}">${n.emoji}</div>
+      <span class="tag">${n.genre}</span>
+      <h3>${n.title}</h3>
+      <p>${n.desc.slice(0,70)}...</p>
+      <div class="meta">${n.chapters.length} ตอน</div>
+    </div>`;
+  });
+  html += '</div>';
+  app.innerHTML = html;
+}
+
+// ---------- หน้ารายละเอียด ----------
+function showNovel(id){
+  window.scrollTo(0,0);
+  const n = NOVELS.find(x=>x.id===id);
+  let html = `<span class="back" onclick="showList()">← กลับหน้าหลัก</span>
+    <div class="detail-head">
+      <div class="cover" style="background:${n.color}">${n.emoji}</div>
+      <div class="detail-info">
+        <span class="tag">${n.genre}</span>
+        <h2>${n.title}</h2>
+        <div class="meta">${n.chapters.length} ตอน</div>
+        <p class="desc">${n.desc}</p>
+      </div>
+    </div>
+    <h3 style="margin-bottom:14px">รายชื่อตอน</h3>
+    <ul class="chapters">`;
+  n.chapters.forEach((c,i)=>{
+    html += `<li onclick="readChapter('${id}',${i})">
+      <span>ตอนที่ ${i+1}: ${c.title}</span>
+      <span class="num">อ่าน →</span>
+    </li>`;
+  });
+  html += '</ul>';
+  app.innerHTML = html;
+}
+
+// ---------- หน้าอ่าน ----------
+function readChapter(id, idx){
+  window.scrollTo(0,0);
+  const n = NOVELS.find(x=>x.id===id);
+  const c = n.chapters[idx];
+  const paras = c.body.map(p=>`<p>${p}</p>`).join('');
+  let html = `<div class="reader">
+    <span class="back" onclick="showNovel('${id}')">← กลับไปหน้าเรื่อง</span>
+    <div class="toolbar">
+      <span>ขนาดตัวอักษร</span>
+      <button class="btn" onclick="changeFont(-2)">A−</button>
+      <span id="fontLabel">${fontSize}px</span>
+      <button class="btn" onclick="changeFont(2)">A+</button>
+    </div>
+    <h2>${n.title}</h2>
+    <div class="chap-title">ตอนที่ ${idx+1}: ${c.title}</div>
+    <div class="reader-body">${paras}</div>
+    <div class="nav-chap">
+      <button class="btn" onclick="readChapter('${id}',${idx-1})" ${idx===0?'disabled':''}>← ตอนก่อนหน้า</button>
+      <button class="btn" onclick="readChapter('${id}',${idx+1})" ${idx===n.chapters.length-1?'disabled':''}>ตอนถัดไป →</button>
+    </div>
+  </div>`;
+  app.innerHTML = html;
+}
+
+// เริ่มต้น
+showList();
+</script>
+</body>
+</html>
